@@ -103,7 +103,7 @@
     }
 
     button,
-    . {
+    .button-link {
       border: none;
       cursor: pointer;
       border-radius: 999px;
@@ -116,10 +116,11 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      font-family: inherit;
     }
 
     button:hover,
-    .:hover {
+    .button-link:hover {
       transform: translateY(-2px);
     }
 
@@ -490,13 +491,13 @@
               </div>
 
               <div class="cta-stack">
-               <button class="button-link register-btn" id="registerLink" type="button">
-  Register for this workshop
-</button>
+                <button class="button-link register-btn" id="registerLink" type="button">
+                  Register for this workshop
+                </button>
 
                 <button class="button-link dm-btn" id="dmLink" type="button">
-  Still unsure? DM “JULY PATH”
-</button>
+                  Still unsure? DM “JULY PATH”
+                </button>
               </div>
             </aside>
           </div>
@@ -709,6 +710,8 @@
       songwriting: 0
     };
 
+    let answerHistory = [];
+
     function startQuiz() {
       currentQuestion = 0;
       score = {
@@ -717,6 +720,7 @@
         improv: 0,
         songwriting: 0
       };
+      answerHistory = [];
 
       document.getElementById("resultCard").style.display = "none";
       document.getElementById("quizStep").style.display = "block";
@@ -728,12 +732,12 @@
     function renderQuestion() {
       const q = questions[currentQuestion];
       const stepNumber = currentQuestion + 1;
-      const progress = ((currentQuestion) / questions.length) * 100;
+      const progress = (currentQuestion / questions.length) * 100;
 
       document.getElementById("progressBar").style.width = progress + "%";
 
       const answersHtml = q.answers.map((answer, index) => `
-        <button class="answer-btn" onclick="selectAnswer(${index})">
+        <button class="answer-btn" onclick="selectAnswer(${index})" type="button">
           <span>
             <span class="answer-main">${answer.text}</span>
             <span class="answer-sub">${answer.sub}</span>
@@ -742,7 +746,7 @@
       `).join("");
 
       const backButton = currentQuestion > 0
-        ? `<button class="back-btn" onclick="goBack()">← Back</button>`
+        ? `<button class="back-btn" onclick="goBack()" type="button">← Back</button>`
         : `<span></span>`;
 
       document.getElementById("quizStep").innerHTML = `
@@ -764,6 +768,8 @@
     function selectAnswer(index) {
       const answer = questions[currentQuestion].answers[index];
 
+      answerHistory.push(answer.scores);
+
       Object.keys(answer.scores).forEach(key => {
         score[key] += answer.scores[key];
       });
@@ -778,20 +784,36 @@
     }
 
     function goBack() {
-      // Simple UX note:
-      // This back button returns to the previous question visually.
-      // It does not remove the previous score, which is acceptable for a lightweight prototype.
-      // For production, store answer history and subtract scores when going back.
       if (currentQuestion > 0) {
+        const previousScores = answerHistory.pop();
+
+        if (previousScores) {
+          Object.keys(previousScores).forEach(key => {
+            score[key] -= previousScores[key];
+          });
+        }
+
         currentQuestion--;
         renderQuestion();
+      }
+    }
+
+    function openExternalLink(url) {
+      const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
+        try {
+          window.top.location.href = url;
+        } catch (error) {
+          window.location.href = url;
+        }
       }
     }
 
     function showResult() {
       document.getElementById("progressBar").style.width = "100%";
 
-      const winningKey = Object.keys(score).reduce((a, b) => score[a] > score[b] ? a : b);
+      const winningKey = Object.keys(score).reduce((a, b) => score[a] >= score[b] ? a : b);
       const result = results[winningKey];
 
       document.getElementById("quizStep").style.display = "none";
@@ -804,8 +826,16 @@
       document.getElementById("resultWhy").textContent = result.why;
       document.getElementById("resultLeaveWith").textContent = result.leaveWith;
 
-      document.getElementById("registerLink").href = result.registerUrl;
-      document.getElementById("registerLink").textContent = `Register for: ${result.workshop}`;
+      const registerButton = document.getElementById("registerLink");
+      registerButton.textContent = `Register for: ${result.workshop}`;
+      registerButton.onclick = function () {
+        openExternalLink(result.registerUrl);
+      };
+
+      const dmButton = document.getElementById("dmLink");
+      dmButton.onclick = function () {
+        openExternalLink("https://www.instagram.com/discoverysoundgarden/");
+      };
     }
 
     function restartQuiz() {
