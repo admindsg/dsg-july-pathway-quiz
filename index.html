@@ -490,12 +490,12 @@
                 </p>
               </div>
 
-              <div class="cta-stack">
-  <a class="button-link register-btn" id="registerLink" href="#" target="_top">
+            <div class="cta-stack">
+  <a class="button-link register-btn" id="registerLink" href="#" target="_blank" rel="noopener noreferrer">
     Register for this workshop
   </a>
 
-  <a class="button-link dm-btn" id="dmLink" href="https://www.instagram.com/discoverysoundgarden/" target="_top">
+  <a class="button-link dm-btn" id="dmLink" href="https://www.instagram.com/discoverysoundgarden/" target="_blank" rel="noopener noreferrer">
     Still unsure? DM “JULY PATH”
   </a>
 </div>
@@ -829,11 +829,13 @@
      const registerLink = document.getElementById("registerLink");
 registerLink.textContent = `Register for: ${result.workshop}`;
 registerLink.href = result.registerUrl;
-registerLink.setAttribute("target", "_top");
+registerLink.setAttribute("target", "_blank");
+registerLink.setAttribute("rel", "noopener noreferrer");
 
 const dmLink = document.getElementById("dmLink");
 dmLink.href = "https://www.instagram.com/discoverysoundgarden/";
-dmLink.setAttribute("target", "_top");
+dmLink.setAttribute("target", "_blank");
+dmLink.setAttribute("rel", "noopener noreferrer");
     }
 
     function restartQuiz() {
