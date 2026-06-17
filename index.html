@@ -491,14 +491,14 @@
               </div>
 
               <div class="cta-stack">
-                <button class="button-link register-btn" id="registerLink" type="button">
-                  Register for this workshop
-                </button>
+  <a class="button-link register-btn" id="registerLink" href="#" target="_top">
+    Register for this workshop
+  </a>
 
-                <button class="button-link dm-btn" id="dmLink" type="button">
-                  Still unsure? DM “JULY PATH”
-                </button>
-              </div>
+  <a class="button-link dm-btn" id="dmLink" href="https://www.instagram.com/discoverysoundgarden/" target="_top">
+    Still unsure? DM “JULY PATH”
+  </a>
+</div>
             </aside>
           </div>
         </div>
@@ -826,16 +826,14 @@
       document.getElementById("resultWhy").textContent = result.why;
       document.getElementById("resultLeaveWith").textContent = result.leaveWith;
 
-      const registerButton = document.getElementById("registerLink");
-      registerButton.textContent = `Register for: ${result.workshop}`;
-      registerButton.onclick = function () {
-        openExternalLink(result.registerUrl);
-      };
+     const registerLink = document.getElementById("registerLink");
+registerLink.textContent = `Register for: ${result.workshop}`;
+registerLink.href = result.registerUrl;
+registerLink.setAttribute("target", "_top");
 
-      const dmButton = document.getElementById("dmLink");
-      dmButton.onclick = function () {
-        openExternalLink("https://www.instagram.com/discoverysoundgarden/");
-      };
+const dmLink = document.getElementById("dmLink");
+dmLink.href = "https://www.instagram.com/discoverysoundgarden/";
+dmLink.setAttribute("target", "_top");
     }
 
     function restartQuiz() {
