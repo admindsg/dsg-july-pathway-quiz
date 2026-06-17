@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Find Your July Music Path | Discovery Sound Garden</title>
+
+  <style>
+    :root {
+      --dsg-green: #1f3d34;
+      --dsg-green-dark: #10251f;
+      --dsg-sage: #dfe9df;
+      --dsg-mint: #eef7ef;
+      --dsg-cream: #fffaf0;
+      --dsg-gold: #d9a441;
+      --dsg-coral: #e97862;
+      --dsg-ink: #1d1d1d;
+      --dsg-muted: #5e665f;
+      --white: #ffffff;
+      --shadow: 0 20px 50px rgba(16, 37, 31, 0.16);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(217, 164, 65, 0.22), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(31, 61, 52, 0.18), transparent 36%),
+        var(--dsg-cream);
+      color: var(--dsg-ink);
+      line-height: 1.5;
+    }
+
+    .quiz-shell {
+      width: min(1080px, 94%);
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--dsg-green), var(--dsg-green-dark));
+      color: var(--white);
+      border-radius: var(--radius-xl);
+      padding: clamp(28px, 5vw, 56px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: rgba(217, 164, 65, 0.16);
+      right: -120px;
+      top: -120px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.15rem, 7vw, 4.8rem);
+      line-height: 0.95;
+      margin: 0 0 18px;
+      letter-spacing: -0.06em;
+      max-width: 820px;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      max-width: 720px;
+      color: rgba(255, 255, 255, 0.86);
+      margin: 0 0 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    button,
+    .button-link {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-weight: 800;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover,
+    .button-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-btn {
+      background: var(--dsg-gold);
+      color: var(--dsg-green-dark);
+      box-shadow: 0 12px 30px rgba(217, 164, 65, 0.25);
+    }
+
+    .secondary-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    .quiz-card {
+      margin-top: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(31, 61, 52, 0.1);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .progress-wrap {
+      background: rgba(31, 61, 52, 0.08);
+      height: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--dsg-gold), var(--dsg-coral));
+      transition: width 0.3s ease;
+    }
+
+    .quiz-content {
+      padding: clamp(24px, 5vw, 48px);
+    }
+
+    .step-label {
+      color: var(--dsg-muted);
+      font-size: 0.92rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .question-title {
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      line-height: 1.03;
+      letter-spacing: -0.045em;
+      color: var(--dsg-green-dark);
+      margin: 0 0 12px;
+    }
+
+    .question-helper {
+      color: var(--dsg-muted);
+      max-width: 720px;
+      margin-bottom: 26px;
+      font-size: 1.04rem;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .answer-btn {
+      background: var(--white);
+      color: var(--dsg-green-dark);
+      border: 1.5px solid rgba(31, 61, 52, 0.14);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: left;
+      justify-content: flex-start;
+      align-items: flex-start;
+      min-height: 116px;
+      box-shadow: 0 8px 22px rgba(31, 61, 52, 0.06);
+    }
+
+    .answer-btn:hover {
+      border-color: var(--dsg-gold);
+      box-shadow: 0 14px 28px rgba(31, 61, 52, 0.1);
+    }
+
+    .answer-main {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .answer-sub {
+      display: block;
+      color: var(--dsg-muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 26px;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: transparent;
+      color: var(--dsg-muted);
+      padding-left: 0;
+    }
+
+    .back-btn:hover {
+      color: var(--dsg-green);
+      transform: none;
+    }
+
+    .mini-note {
+      color: var(--dsg-muted);
+      font-size: 0.92rem;
+    }
+
+    .result-card {
+      display: none;
+    }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .result-main {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 40px);
+      border: 1px solid rgba(31, 61, 52, 0.12);
+    }
+
+    .result-badge {
+      display: inline-flex;
+      background: var(--dsg-mint);
+      color: var(--dsg-green);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-weight: 900;
+      font-size: 0.86rem;
+      margin-bottom: 18px;
+    }
+
+    .result-title {
+      font-size: clamp(2rem, 6vw, 4rem);
+      letter-spacing: -0.06em;
+      line-height: 0.95;
+      color: var(--dsg-green-dark);
+      margin: 0 0 18px;
+    }
+
+    .result-description {
+      color: var(--dsg-muted);
+      font-size: 1.08rem;
+      margin-bottom: 22px;
+    }
+
+    .details {
+      display: grid;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .detail-item {
+      background: var(--dsg-cream);
+      border: 1px solid rgba(31, 61, 52, 0.08);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .detail-item strong {
+      color: var(--dsg-green-dark);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .result-side {
+      background: linear-gradient(160deg, var(--dsg-green), var(--dsg-green-dark));
+      color: var(--white);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 36px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-side::before {
+      content: "♪";
+      position: absolute;
+      font-size: 12rem;
+      color: rgba(255, 255, 255, 0.06);
+      right: 18px;
+      top: -20px;
+      line-height: 1;
+    }
+
+    .side-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .side-content h3 {
+      font-size: 1.6rem;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 0 0 14px;
+    }
+
+    .side-content p {
+      color: rgba(255, 255, 255, 0.82);
+      margin-bottom: 22px;
+    }
+
+    .cta-stack {
+      display: grid;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .register-btn {
+      background: var(--dsg-gold);
+      color: var(--dsg-green-dark);
+      width: 100%;
+    }
+
+    .dm-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      width: 100%;
+    }
+
+    .restart-btn {
+      background: transparent;
+      color: var(--dsg-muted);
+      margin-top: 18px;
+      padding-left: 0;
+    }
+
+    .workshop-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .workshop-pill {
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(31, 61, 52, 0.1);
+      color: var(--dsg-green-dark);
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: var(--dsg-muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .answers,
+      .result-layout,
+      .workshop-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-btn {
+        min-height: auto;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="quiz-shell">
+    <section class="hero">
+      <div class="eyebrow">Discovery Sound Garden · July Workshops</div>
+      <h1>Find Your July Music Path</h1>
+      <p>
+        Not sure which workshop is right for you? Take this quick, playful check-in and get matched with the July session that fits your musical moment.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary-btn" onclick="startQuiz()">Start the Check-In</button>
+        <a class="button-link secondary-btn" href="#all-workshops">See all July workshops</a>
+      </div>
+    </section>
+
+    <section class="quiz-card" id="quizCard">
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="quiz-content">
+        <div id="quizStep">
+          <div class="step-label">Before we begin</div>
+          <h2 class="question-title">This is not a test.</h2>
+          <p class="question-helper">
+            It is a gentle way to help you choose between DSG’s July workshops. Answer with what feels most true right now.
+          </p>
+
+          <button class="primary-btn" onclick="startQuiz()">Begin</button>
+        </div>
+
+        <div class="result-card" id="resultCard">
+          <div class="result-layout">
+            <div class="result-main">
+              <span class="result-badge" id="resultBadge">Your July Pathway</span>
+              <h2 class="result-title" id="resultTitle"></h2>
+              <p class="result-description" id="resultDescription"></p>
+
+              <div class="details">
+                <div class="detail-item">
+                  <strong>Best workshop for you</strong>
+                  <span id="resultWorkshop"></span>
+                </div>
+
+                <div class="detail-item">
+                  <strong>Why this fits</strong>
+                  <span id="resultWhy"></span>
+                </div>
+
+                <div class="detail-item">
+                  <strong>You will leave with</strong>
+                  <span id="resultLeaveWith"></span>
+                </div>
+              </div>
+
+              <button class="restart-btn" onclick="restartQuiz()">Retake the quiz</button>
+            </div>
+
+            <aside class="result-side">
+              <div class="side-content">
+                <h3>Your next step is simple.</h3>
+                <p>
+                  Choose the workshop, save your seat, and come as you are. DSG is built for real people with real lives, real nerves, and real musical possibility.
+                </p>
+              </div>
+
+              <div class="cta-stack">
+                <a class="button-link register-btn" id="registerLink" href="#" target="_blank" rel="noopener">
+                  Register for this workshop
+                </a>
+
+                <a class="button-link dm-btn" id="dmLink" href="https://www.instagram.com/discoverysoundgarden/" target="_blank" rel="noopener">
+                  Still unsure? DM “JULY PATH”
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="all-workshops" class="workshop-grid">
+      <div class="workshop-pill">How to Read Music in One Hour</div>
+      <div class="workshop-pill">How to Sing in a Choir</div>
+      <div class="workshop-pill">Improvisation & Musical Confidence</div>
+      <div class="workshop-pill">Songwriting for Beginners</div>
+    </section>
+
+    <p class="footer-note">
+      Discovery Sound Garden cultivates possibility. These workshops help you choose where to begin.
+    </p>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        title: "What made you curious about a music workshop right now?",
+        helper: "Pick the answer that sounds the most like you.",
+        answers: [
+          {
+            text: "I want music to make more sense.",
+            sub: "Notes, rhythm, reading, basics, structure.",
+            scores: { read: 3, choir: 1, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "I want to sing with other people.",
+            sub: "Choir, harmony, community, confidence.",
+            scores: { read: 0, choir: 3, improv: 1, songwriting: 0 }
+          },
+          {
+            text: "I want to feel braver making sound.",
+            sub: "Less fear, more confidence, more play.",
+            scores: { read: 0, choir: 1, improv: 3, songwriting: 1 }
+          },
+          {
+            text: "I have ideas I want to turn into songs.",
+            sub: "Lyrics, melodies, stories, creative structure.",
+            scores: { read: 0, choir: 0, improv: 1, songwriting: 3 }
+          }
+        ]
+      },
+      {
+        title: "What feels most in the way?",
+        helper: "This helps us match you with the workshop that removes the biggest barrier first.",
+        answers: [
+          {
+            text: "I feel behind on the basics.",
+            sub: "I want someone to explain music clearly.",
+            scores: { read: 3, choir: 0, improv: 0, songwriting: 1 }
+          },
+          {
+            text: "I get nervous singing around people.",
+            sub: "I want support, not pressure.",
+            scores: { read: 0, choir: 3, improv: 2, songwriting: 0 }
+          },
+          {
+            text: "I freeze when I have to create on the spot.",
+            sub: "I want to loosen up and trust myself.",
+            scores: { read: 0, choir: 0, improv: 3, songwriting: 1 }
+          },
+          {
+            text: "I start ideas but do not know how to finish them.",
+            sub: "I need a simple songwriting pathway.",
+            scores: { read: 1, choir: 0, improv: 1, songwriting: 3 }
+          }
+        ]
+      },
+      {
+        title: "What would feel like a win after one workshop?",
+        helper: "Think small, real, and satisfying.",
+        answers: [
+          {
+            text: "Reading a piece of music without panic.",
+            sub: "I want the page to feel less mysterious.",
+            scores: { read: 3, choir: 1, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "Knowing how to show up in a choir.",
+            sub: "Voice parts, listening, blending, rehearsal flow.",
+            scores: { read: 0, choir: 3, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "Trying something musical without judging myself.",
+            sub: "I want to play, explore, and build confidence.",
+            scores: { read: 0, choir: 0, improv: 3, songwriting: 1 }
+          },
+          {
+            text: "Leaving with the beginning of a song.",
+            sub: "A lyric, melody, chord idea, or structure.",
+            scores: { read: 0, choir: 0, improv: 1, songwriting: 3 }
+          }
+        ]
+      },
+      {
+        title: "Which room would you walk into first?",
+        helper: "No overthinking. Choose the one that pulls you in.",
+        answers: [
+          {
+            text: "A room where someone explains rhythm and notes simply.",
+            sub: "Clear, practical, beginner-friendly.",
+            scores: { read: 3, choir: 0, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "A room full of singers learning together.",
+            sub: "Warm-ups, harmony, group sound.",
+            scores: { read: 0, choir: 3, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "A room where mistakes are part of the music.",
+            sub: "Creative games, confidence, improvisation.",
+            scores: { read: 0, choir: 0, improv: 3, songwriting: 0 }
+          },
+          {
+            text: "A room where ideas become lyrics and melodies.",
+            sub: "Creative prompts, song structure, expression.",
+            scores: { read: 0, choir: 0, improv: 0, songwriting: 3 }
+          }
+        ]
+      },
+      {
+        title: "Which phrase sounds most like your July energy?",
+        helper: "Your answer helps us choose the most emotionally useful workshop.",
+        answers: [
+          {
+            text: "I want clarity.",
+            sub: "Help me understand what I am looking at and hearing.",
+            scores: { read: 3, choir: 0, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "I want connection.",
+            sub: "Help me sing with people and feel part of something.",
+            scores: { read: 0, choir: 3, improv: 0, songwriting: 0 }
+          },
+          {
+            text: "I want courage.",
+            sub: "Help me stop being so afraid to try.",
+            scores: { read: 0, choir: 0, improv: 3, songwriting: 0 }
+          },
+          {
+            text: "I want expression.",
+            sub: "Help me turn what I feel into something musical.",
+            scores: { read: 0, choir: 0, improv: 0, songwriting: 3 }
+          }
+        ]
+      }
+    ];
+
+    const results = {
+      read: {
+        badge: "Your July Pathway: Clarity",
+        title: "You should start with musical clarity.",
+        description:
+          "You are craving a simple, supportive way to understand what is happening on the page and in the music. The best starting point is the workshop that makes music reading feel less intimidating.",
+        workshop: "How to Read Music in One Hour",
+        why:
+          "You want the basics to click: rhythm, notes, patterns, and practical reading skills.",
+        leaveWith:
+          "A clearer sense of how written music works and a more confident starting point.",
+        registerUrl: "https://www.zeffy.com/en-US/ticketing/how-to-read-music-in-one-hour"
+      },
+      choir: {
+        badge: "Your July Pathway: Connection",
+        title: "You should sing with others.",
+        description:
+          "You are drawn to community, group sound, and the feeling of being part of something bigger than yourself. The best fit is the workshop that helps you understand how choir singing works.",
+        workshop: "How to Sing in a Choir",
+        why:
+          "You want to build confidence with voice parts, rehearsal flow, listening, blend, and ensemble singing.",
+        leaveWith:
+          "A better understanding of how to enter a choir room and participate with confidence.",
+        registerUrl: "https://www.zeffy.com/en-US/ticketing/how-to-sing-in-a-choir"
+      },
+      improv: {
+        badge: "Your July Pathway: Courage",
+        title: "You should build musical confidence.",
+        description:
+          "You are ready to feel less frozen, less judged, and more free inside music. The best fit is the workshop that helps you practice courage through creativity.",
+        workshop: "Improvisation & Musical Confidence",
+        why:
+          "You want a safe, playful space to try ideas, make mistakes, and build trust in your musical instincts.",
+        leaveWith:
+          "A stronger sense that you can create in the moment without needing to be perfect first.",
+        registerUrl: "https://www.zeffy.com/en-US/ticketing/music-improvisation-and-confidence"
+      },
+      songwriting: {
+        badge: "Your July Pathway: Expression",
+        title: "You should turn your ideas into songs.",
+        description:
+          "You have something to say, but you may need structure, prompts, and a welcoming space to begin shaping it. The best fit is the workshop that turns creative sparks into musical material.",
+        workshop: "Songwriting for Beginners",
+        why:
+          "You want help shaping lyrics, melodies, stories, or song ideas into something more complete.",
+        leaveWith:
+          "A practical starting point for a song and more confidence in your creative voice.",
+        registerUrl: "https://www.zeffy.com/en-US/ticketing/songwriting-for-beginners"
+      }
+    };
+
+    let currentQuestion = 0;
+    let score = {
+      read: 0,
+      choir: 0,
+      improv: 0,
+      songwriting: 0
+    };
+
+    function startQuiz() {
+      currentQuestion = 0;
+      score = {
+        read: 0,
+        choir: 0,
+        improv: 0,
+        songwriting: 0
+      };
+
+      document.getElementById("resultCard").style.display = "none";
+      document.getElementById("quizStep").style.display = "block";
+
+      renderQuestion();
+      document.getElementById("quizCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const stepNumber = currentQuestion + 1;
+      const progress = ((currentQuestion) / questions.length) * 100;
+
+      document.getElementById("progressBar").style.width = progress + "%";
+
+      const answersHtml = q.answers.map((answer, index) => `
+        <button class="answer-btn" onclick="selectAnswer(${index})">
+          <span>
+            <span class="answer-main">${answer.text}</span>
+            <span class="answer-sub">${answer.sub}</span>
+          </span>
+        </button>
+      `).join("");
+
+      const backButton = currentQuestion > 0
+        ? `<button class="back-btn" onclick="goBack()">← Back</button>`
+        : `<span></span>`;
+
+      document.getElementById("quizStep").innerHTML = `
+        <div class="step-label">Question ${stepNumber} of ${questions.length}</div>
+        <h2 class="question-title">${q.title}</h2>
+        <p class="question-helper">${q.helper}</p>
+
+        <div class="answers">
+          ${answersHtml}
+        </div>
+
+        <div class="nav-row">
+          ${backButton}
+          <span class="mini-note">Choose what feels most true.</span>
+        </div>
+      `;
+    }
+
+    function selectAnswer(index) {
+      const answer = questions[currentQuestion].answers[index];
+
+      Object.keys(answer.scores).forEach(key => {
+        score[key] += answer.scores[key];
+      });
+
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function goBack() {
+      // Simple UX note:
+      // This back button returns to the previous question visually.
+      // It does not remove the previous score, which is acceptable for a lightweight prototype.
+      // For production, store answer history and subtract scores when going back.
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    }
+
+    function showResult() {
+      document.getElementById("progressBar").style.width = "100%";
+
+      const winningKey = Object.keys(score).reduce((a, b) => score[a] > score[b] ? a : b);
+      const result = results[winningKey];
+
+      document.getElementById("quizStep").style.display = "none";
+      document.getElementById("resultCard").style.display = "block";
+
+      document.getElementById("resultBadge").textContent = result.badge;
+      document.getElementById("resultTitle").textContent = result.title;
+      document.getElementById("resultDescription").textContent = result.description;
+      document.getElementById("resultWorkshop").textContent = result.workshop;
+      document.getElementById("resultWhy").textContent = result.why;
+      document.getElementById("resultLeaveWith").textContent = result.leaveWith;
+
+      document.getElementById("registerLink").href = result.registerUrl;
+      document.getElementById("registerLink").textContent = `Register for: ${result.workshop}`;
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+  </script>
+</body>
+</html>
