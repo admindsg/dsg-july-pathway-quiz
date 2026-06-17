@@ -826,16 +826,36 @@
       document.getElementById("resultWhy").textContent = result.why;
       document.getElementById("resultLeaveWith").textContent = result.leaveWith;
 
-     const registerLink = document.getElementById("registerLink");
+    const registerLink = document.getElementById("registerLink");
 registerLink.textContent = `Register for: ${result.workshop}`;
 registerLink.href = result.registerUrl;
 registerLink.setAttribute("target", "_blank");
 registerLink.setAttribute("rel", "noopener noreferrer");
 
+registerLink.onclick = function(event) {
+  event.preventDefault();
+  openExternalLink(result.registerUrl);
+};
+
+registerLink.ontouchend = function(event) {
+  event.preventDefault();
+  openExternalLink(result.registerUrl);
+};
+
 const dmLink = document.getElementById("dmLink");
 dmLink.href = "https://www.instagram.com/discoverysoundgarden/";
 dmLink.setAttribute("target", "_blank");
 dmLink.setAttribute("rel", "noopener noreferrer");
+
+dmLink.onclick = function(event) {
+  event.preventDefault();
+  openExternalLink("https://www.instagram.com/discoverysoundgarden/");
+};
+
+dmLink.ontouchend = function(event) {
+  event.preventDefault();
+  openExternalLink("https://www.instagram.com/discoverysoundgarden/");
+};
     }
 
     function restartQuiz() {
